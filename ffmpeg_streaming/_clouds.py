@@ -189,11 +189,14 @@ class MAS(Clouds):
         return filename
     
 class MinIO(Clouds):
+    
+    def __init__(self, key):
+        self.key = key
 
-    def upload_directory(self, directory, key **options):
+    def upload_directory(self, directory, **options):
         try:
             bucket_name = options.pop('bucket_name', None)
-            print('key', key)
+            
             if bucket_name is None:
                 raise ValueError('You should pass a bucket name')
 
@@ -235,14 +238,11 @@ class MinIO(Clouds):
                             with open(os.path.join(directory, file), 'rb') as zip_file:
                                 flength = f.write(zip_file.read())
 
-                            metrics = InMemoryUploadedFile(
-                                f, None, file, content_type, flength, None
-                            )
+                            metrics = InMemoryUploadedFile(f, None, file, content_type, flength, None)
 
                             metrics.seek(0)
 
-                            storage._save(file_path_name=join(
-                                'streaming', file), content=metrics)
+                            storage._save(file_path_name=join(self.key, file), content=metrics)
                         except Exception as e:
                             logging.error('file '+str(e))
                             raise RuntimeError('file', str(e))
