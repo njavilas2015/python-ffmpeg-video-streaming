@@ -224,7 +224,7 @@ class HLS(Streaming):
         if HLS.KEY_INFO_FILE_PATH is not None:
             rm(HLS.KEY_INFO_FILE_PATH)
 
-        super(HLS, self).finish_up()
+        super(HLS, self, key).finish_up()
 
 
 class Stream2File(Save):
