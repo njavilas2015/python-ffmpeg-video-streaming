@@ -10,6 +10,8 @@
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
 - **[Full Documentation](https://video.aminyazdanpanah.com/python/)** is available describing all features and components.
 - In this version(>=v0.1.0) all codes are rewritten from scratch. If you find any bugs in the library, please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**. **[Pull requests](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)** are also welcome.
+
+Add support to minIO
  
 **Contents**
 - [Requirements](#requirements)
