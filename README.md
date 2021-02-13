@@ -12,6 +12,8 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 - In this version(>=v0.1.0) all codes are rewritten from scratch. If you find any bugs in the library, please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**. **[Pull requests](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)** are also welcome.
 
 Add support to minIO
+
+pip3 install git+https://github.com/njavilas2015/python-ffmpeg-video-streaming.git#egg=ffmpeg_streaming
  
 **Contents**
 - [Requirements](#requirements)
