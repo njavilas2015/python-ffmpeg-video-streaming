@@ -43,7 +43,7 @@ class Save(abc.ABC):
         self.pipe = None
         self.output_temp = False
 
-    def finish_up(self):
+    def finish_up(self, key=None):
         """
         @TODO: add documentation
         """
@@ -217,7 +217,7 @@ class HLS(Streaming):
         hls_flags = hls_flags + "+" + "+".join(list(flags)) if hls_flags is not None else "+".join(list(flags))
         self.options.update({'hls_flags': hls_flags})
 
-    def finish_up(self):
+    def finish_up(self, key=None):
         """
         @TODO: add documentation
         """
