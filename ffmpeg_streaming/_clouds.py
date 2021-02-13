@@ -190,10 +190,10 @@ class MAS(Clouds):
     
 class MinIO(Clouds):
 
-    def upload_directory(self, directory, **options):
+    def upload_directory(self, directory, key **options):
         try:
             bucket_name = options.pop('bucket_name', None)
-
+            print('key', key)
             if bucket_name is None:
                 raise ValueError('You should pass a bucket name')
 
