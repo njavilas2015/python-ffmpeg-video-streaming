@@ -20,7 +20,7 @@ USE_TEMPLATE = 1
 
 # HLS default values
 HLS_LIST_SIZE = 0
-HLS_TIME = 10
+HLS_TIME = 5
 HLS_ALLOW_CACHE = 1
 
 
@@ -103,9 +103,11 @@ def _get_hls_stream(hls, rep, dirname, name):
         's:v':                      rep.size,
         'b:v':                      rep.bitrate.calc_video()
     })
+    args.update({'c': 'copy'})
+    
     args.update(_get_audio_bitrate(rep))
     args.update(rep.options)
-    args.update({'strict': '-2'})
+    #args.update({'strict': '-2'})
     args.update(hls.options)
 
     return cnv_options_to_args(args) + ["{}/{}_{}p.m3u8".format(dirname, name, str(rep.size.height))]
