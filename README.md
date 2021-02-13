@@ -14,7 +14,51 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 Add support to minIO
 
 pip3 install git+https://github.com/njavilas2015/python-ffmpeg-video-streaming.git#egg=ffmpeg_streaming
- 
+
+def convert_streaming(bucket_name, resolutions, key, key_save):
+    if not key is None:
+        minIO = MinIO(key=key_save)
+
+        video = ffmpeg_streaming.input(minIO, bucket_name=bucket_name, key=key)
+
+        hls = video.hls(Formats.h264())
+
+        _144p = Representation(Size(256, 144), Bitrate(95 * 1024, 64 * 1024))
+        _240p = Representation(Size(426, 240), Bitrate(150 * 1024, 94 * 1024))
+        _360p = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
+        _480p = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
+        _720p = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
+        _1080p = Representation(
+            Size(1920, 1080), Bitrate(4096 * 1024, 320 * 1024))
+        _2k = Representation(
+            Size(2560, 1440), Bitrate(6144 * 1024, 320 * 1024))
+        _4k = Representation(
+            Size(3840, 2160), Bitrate(17408 * 1024, 320 * 1024))
+
+        if resolutions == '720':
+            hls.representations(_360p, _720p)
+
+        elif resolutions == '1080':
+            hls.representations(_360p, _720p, _1080p)
+
+        elif resolutions == '2k':
+            hls.representations(_360p, _720p, _1080p, _2k)
+
+        elif resolutions == '4k':
+            hls.representations(_360p, _720p, _1080p, _2k, _4k)
+
+        save_to_custom = CloudManager().add(minIO, bucket_name=bucket_name)
+
+        hls.output('playlist.m3u8', clouds=save_to_custom, monitor=monitor)
+
+        hls.finish_up()
+
+        hls.delete_tmp()
+    else:
+        print('No puede ser None la el stream')
+        pass
+
+
 **Contents**
 - [Requirements](#requirements)
 - [Installation](#installation)
