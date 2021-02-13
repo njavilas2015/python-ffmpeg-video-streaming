@@ -15,7 +15,7 @@ import abc
 import logging
 import tempfile
 from os import listdir
-from os.path import isfile, join, basename
+from os.path import isfile, join, basename, isdir
 
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
