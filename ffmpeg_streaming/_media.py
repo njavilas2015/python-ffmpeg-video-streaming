@@ -51,10 +51,9 @@ class Save(abc.ABC):
             rm(self.media.input)
         if self.output_temp:
             self.clouds.transfer('upload_directory', os.path.dirname(self.output_))
-            if self.output:
-                shutil.move(os.path.dirname(self.output_), os.path.dirname(str(self.output)))
-            else:
-                shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
+        
+    def delete_tmp(self):
+        shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
 
     @abc.abstractmethod
     def set_up(self):
