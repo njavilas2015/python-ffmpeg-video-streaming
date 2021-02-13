@@ -187,8 +187,7 @@ class MAS(Clouds):
             raise RuntimeError(error)
 
         return filename
-    
-class MinIO(Clouds):
+    class MinIO(Clouds):
 
     def upload_directory(self, directory, **options):
         try:
@@ -197,56 +196,60 @@ class MinIO(Clouds):
             if bucket_name is None:
                 raise ValueError('You should pass a bucket name')
 
+            
             files = []
 
-            for f in listdir(directory):
-                if isfile(join(directory, f)):
-                    files.append(f)
-                else:
-                    pass
+            if isdir(directory):
 
-            storage = MinioBackend(bucket_name=bucket_name)
+                for f in listdir(directory):
 
-            content_type = None
+                    if isfile(join(directory, f)):
+                        files.append(f)
+                    else:
+                        pass
 
-            contentType = {
-                'm3u8': 'application/x-mpegURL',
-                'ts': 'video/MP2T',
-                'mp4': 'video/mp4',
-            }
+                storage = MinioBackend(bucket_name=bucket_name)
 
-            try:
-                for file in files:
+                content_type = None
 
-                    try:
+                contentType = {
+                    'm3u8': 'application/x-mpegURL',
+                    'ts': 'video/MP2T',
+                    'mp4': 'video/mp4',
+                }
 
-                        if file.split('.')[1] == 'ts':
-                            content_type = contentType['ts']
-                        elif file.split('.')[1] == 'm3u8':
-                            content_type = contentType['m3u8']
-                        else:
-                            continue
+                try:
+                    for file in files:
 
-                        f = io.BytesIO(b'')
+                        try:
 
-                        with open(os.path.join(directory, file), 'rb') as zip_file:
-                            flength = f.write(zip_file.read())
+                            if file.split('.')[1] == 'ts':
+                                content_type = contentType['ts']
+                            elif file.split('.')[1] == 'm3u8':
+                                content_type = contentType['m3u8']
+                            else:
+                                continue
 
-                        metrics = InMemoryUploadedFile(
-                            f, None, file, content_type, flength, None
-                        )
+                            f = io.BytesIO(b'')
 
-                        metrics.seek(0)
+                            with open(os.path.join(directory, file), 'rb') as zip_file:
+                                flength = f.write(zip_file.read())
 
-                        storage._save(file_path_name=join(
-                            'streaming', file), content=metrics)
-                    except Exception as e:
-                        logging.error('file '+str(e))
-                        raise RuntimeError('file', str(e))
+                            metrics = InMemoryUploadedFile(
+                                f, None, file, content_type, flength, None
+                            )
 
-            except Exception as e:
-                logging.error('files '+str(e))
-                raise RuntimeError('files', str(e))
+                            metrics.seek(0)
+
+                            storage._save(file_path_name=join(
+                                'streaming', file), content=metrics)
+                        except Exception as e:
+                            logging.error('file '+str(e))
+                            raise RuntimeError('file', str(e))
+
+                except Exception as e:
+                    logging.error('files '+str(e))
+                    raise RuntimeError('files', str(e))
 
         except Exception as e:
             logging.error('upload_directory ' + str(e))
@@ -278,7 +281,6 @@ class MinIO(Clouds):
             raise RuntimeError(e)
 
         return filename.name
-
 
 
 class CloudManager:
