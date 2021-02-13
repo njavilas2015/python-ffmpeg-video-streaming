@@ -18,6 +18,12 @@ from os import listdir
 from os.path import isfile, join, basename
 
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django_minio_backend import MinioBackend
+import io
+import os
+import datetime
+
 class Clouds(abc.ABC):
     """
     @TODO: add documentation
@@ -181,6 +187,98 @@ class MAS(Clouds):
             raise RuntimeError(error)
 
         return filename
+    
+class MinIO(Clouds):
+
+    def upload_directory(self, directory, **options):
+        try:
+            bucket_name = options.pop('bucket_name', None)
+
+            if bucket_name is None:
+                raise ValueError('You should pass a bucket name')
+
+            files = []
+
+            for f in listdir(directory):
+                if isfile(join(directory, f)):
+                    files.append(f)
+                else:
+                    pass
+
+            storage = MinioBackend(bucket_name=bucket_name)
+
+            content_type = None
+
+            contentType = {
+                'm3u8': 'application/x-mpegURL',
+                'ts': 'video/MP2T',
+                'mp4': 'video/mp4',
+            }
+
+            try:
+                for file in files:
+
+                    try:
+
+                        if file.split('.')[1] == 'ts':
+                            content_type = contentType['ts']
+                        elif file.split('.')[1] == 'm3u8':
+                            content_type = contentType['m3u8']
+                        else:
+                            continue
+
+                        f = io.BytesIO(b'')
+
+                        with open(os.path.join(directory, file), 'rb') as zip_file:
+                            flength = f.write(zip_file.read())
+
+                        metrics = InMemoryUploadedFile(
+                            f, None, file, content_type, flength, None
+                        )
+
+                        metrics.seek(0)
+
+                        storage._save(file_path_name=join(
+                            'streaming', file), content=metrics)
+                    except Exception as e:
+                        logging.error('file '+str(e))
+                        raise RuntimeError('file', str(e))
+
+            except Exception as e:
+                logging.error('files '+str(e))
+                raise RuntimeError('files', str(e))
+
+        except Exception as e:
+            logging.error('upload_directory ' + str(e))
+            raise RuntimeError('upload_directory', str(e))
+
+    def download(self, filename=None, **options):
+        bucket_name = options.pop('bucket_name', None)
+        key = options.pop('key', None)
+
+        if bucket_name is None or key is None:
+            raise ValueError('You should pass a bucket and key name')
+
+        if filename is None:
+            filename = tempfile.NamedTemporaryFile(
+                prefix=basename(key), delete=False)
+        else:
+            filename = open(filename, 'wb')
+
+        try:
+            with filename as f:
+                storage = MinioBackend(bucket_name=bucket_name)
+                file = storage._open(object_name=key)
+                for chunk in file.chunks():
+                    f.write(chunk)
+
+            logging.info("The " + filename.name + " file was downloaded")
+        except Exception as e:
+            logging.error(e)
+            raise RuntimeError(e)
+
+        return filename.name
+
 
 
 class CloudManager:
@@ -205,5 +303,6 @@ __all__ = [
     'CloudManager',
     'S3',
     'GCS',
-    'MAS'
+    'MAS',
+    'MinIO',
 ]
