@@ -43,14 +43,14 @@ class Save(abc.ABC):
         self.pipe = None
         self.output_temp = False
 
-    def finish_up(self, key):
+    def finish_up(self):
         """
         @TODO: add documentation
         """
         if self.media.input_temp:
             rm(self.media.input)
         if self.output_temp:
-            self.clouds.transfer('upload_directory', os.path.dirname(self.output_), key)
+            self.clouds.transfer('upload_directory', os.path.dirname(self.output_))
         
     def delete_tmp(self):
         shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
@@ -217,14 +217,14 @@ class HLS(Streaming):
         hls_flags = hls_flags + "+" + "+".join(list(flags)) if hls_flags is not None else "+".join(list(flags))
         self.options.update({'hls_flags': hls_flags})
 
-    def finish_up(self, key):
+    def finish_up(self):
         """
         @TODO: add documentation
         """
         if HLS.KEY_INFO_FILE_PATH is not None:
             rm(HLS.KEY_INFO_FILE_PATH)
 
-        super(HLS, self).finish_up(key)
+        super(HLS, self).finish_up()
 
 
 class Stream2File(Save):
