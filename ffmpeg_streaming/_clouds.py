@@ -187,7 +187,8 @@ class MAS(Clouds):
             raise RuntimeError(error)
 
         return filename
-    class MinIO(Clouds):
+    
+class MinIO(Clouds):
 
     def upload_directory(self, directory, **options):
         try:
@@ -196,7 +197,6 @@ class MAS(Clouds):
             if bucket_name is None:
                 raise ValueError('You should pass a bucket name')
 
-            
             files = []
 
             if isdir(directory):
