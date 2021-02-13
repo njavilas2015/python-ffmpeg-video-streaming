@@ -33,7 +33,7 @@ class Save(abc.ABC):
         """
         @TODO: add documentation
         """
-        atexit.register(self.finish_up)
+        atexit.register(self.delete_tmp)
 
         self.output_ = ''
         self.key = None
